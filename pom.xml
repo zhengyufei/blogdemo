@@ -41,11 +41,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
-        <!-- jakarta mail 核心包，提供MimeMessage -->
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>jakarta.mail</artifactId>
-        </dependency>
 
         <!-- MyBatis 适配 Spring Boot 4 -->
         <dependency>
