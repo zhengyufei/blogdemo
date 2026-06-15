@@ -32,6 +32,6 @@ public class CommentServiceImpl implements ICommentService {
         commentMapper.publishComment(comment);
         Statistic statistic = statisticMapper.selectStatisticWithArticleId(comment.getArticleId());
         statistic.setCommentsNum(statistic.getCommentsNum()+1);
-        statisticMapper.updateArticleHitsWithId(statistic);
+        statisticMapper.updateArticleCommentWithId(statistic);
     }
 }

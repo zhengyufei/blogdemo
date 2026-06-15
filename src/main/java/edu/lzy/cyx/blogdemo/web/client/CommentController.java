@@ -7,11 +7,10 @@ import edu.lzy.cyx.blogdemo.responsedata.ArticleResponseData;
 import edu.lzy.cyx.blogdemo.service.ICommentService;
 import edu.lzy.cyx.blogdemo.utils.MyUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,15 +28,23 @@ public class CommentController {
     private ICommentService commentService;
 @PostMapping(value = "/publish")
 @ResponseBody
-    public ArticleResponseData publishComment(HttpServletRequest request, @RequestParam Integer aid,@RequestParam String text){
+    public ArticleResponseData publishComment(HttpServletRequest request,
+                                              @RequestParam Integer aid,
+                                              @RequestParam(value = "author", required = false) String author,
+                                              @RequestParam String text){
+        text = StringUtils.trimToEmpty(text);
+        if (StringUtils.isBlank(text)) {
+            return ArticleResponseData.fail("评论内容不能为空");
+        }
+        author = StringUtils.defaultIfBlank(StringUtils.trimToEmpty(author), "匿名用户");
+        author = StringUtils.substring(MyUtils.cleanXSS(author), 0, 20);
         text = MyUtils.cleanXSS(text);
         text = EmojiParser.parseToAliases(text);
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Comment comment = new Comment();
         comment.setArticleId(aid);
         comment.setIp(request.getRemoteAddr());
         comment.setCreated(new Date());
-        comment.setAuthor(user.getUsername());
+        comment.setAuthor(author);
         comment.setContent(text);
         comment.setStatus("approved");
         try {
